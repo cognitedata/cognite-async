@@ -101,13 +101,18 @@ class Job:
         self.priority = self.PRIORITY_COUNTER
         Job.PRIORITY_COUNTER += 1
         self.callback = None
+        self.callback_lock = threading.Lock()
 
     def __lt__(self, other):
         return self.priority < other.priority
 
     def set_callback(self,callback):
-        """add a callback to be called with the result when the job is done. Note that in the case of an exception in the job, the exception object will be passed instead of a result."""
-        self.callback = callback
+        """Add a callback to be called with the result when the job is done. When setting on a job that is done already, will callback immediately (and synchronously).
+        Note that in the case of an exception in the job, the exception object will be passed instead of a result."""
+        with self.callback_lock:
+            self.callback = callback
+            if self._result.done(): # trying to set a callback on a job
+                self.callback(self.result)
 
     @property
     def result(self):
@@ -158,9 +163,10 @@ class Job:
             self._result.set_result("child_job_finished")  # should not duplicate data here, all goes to parent
             self.parent._merge_child(result, self.child_index)
         else:
-            self._result.set_result(result)
-            if self.callback:
-                self.callback(result)
+            with self.callback_lock:
+                self._result.set_result(result)
+                if self.callback:
+                    self.callback(result)
 
     def _merge_child(self, result, child_index):
         with self.merge_lock:
