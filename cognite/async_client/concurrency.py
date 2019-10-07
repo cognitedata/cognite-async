@@ -250,6 +250,7 @@ class DatapointsJob(Job):
         result = self.api_client._post(self.api_client._RESOURCE_PATH + "/list", json=payload)
         data = result.json()["items"][0]
         retrieved_inside_range = len(data["datapoints"])
+        at_end = not data["datapoints"] or data["datapoints"][-1]["timestamp"] + self.granularity >= self.query["end"]
         if self.query.get("includeOutsidePoints") and data["datapoints"]:
             if data["datapoints"][0]["timestamp"] < self.query["start"]:
                 retrieved_inside_range -= 1
@@ -258,10 +259,11 @@ class DatapointsJob(Job):
             if data["datapoints"] and data["datapoints"][-1]["timestamp"] >= self.query["end"]:
                 retrieved_inside_range -= 1
                 # we still need to paginate, so point after is duplicate here (and will mess up start)
-                if retrieved_inside_range == self.limit:
+                at_end = data["datapoints"][-2]["timestamp"] + self.granularity >= self.query["end"]
+                if retrieved_inside_range == self.limit and not at_end:
                     data["datapoints"] = data["datapoints"][:-1]
         self.retrieved_data._extend(Datapoints._load(data, expected_fields=self.query.get("aggregates", ["value"])))
-        if retrieved_inside_range == self.limit:
+        if retrieved_inside_range == self.limit and not at_end:
             self.query["start"] = data["datapoints"][-1]["timestamp"] + self.granularity
             return self  # continue job
         else:
