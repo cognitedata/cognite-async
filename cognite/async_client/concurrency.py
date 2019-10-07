@@ -249,17 +249,20 @@ class DatapointsJob(Job):
         payload = {"items": [self.query], "limit": self.limit}
         result = self.api_client._post(self.api_client._RESOURCE_PATH + "/list", json=payload)
         data = result.json()["items"][0]
-        datapoints = data["datapoints"]
-        if (
-            self.query.get("includeOutsidePoints")
-            and datapoints
-            and self.retrieved_data
-            and self.retrieved_data[-1] == datapoints[0]
-        ):  # duplicate edges for include outside points
-            data["datapoints"] = datapoints[1:]
+        retrieved_inside_range = len(data["datapoints"])
+        if self.query.get("includeOutsidePoints") and data["datapoints"]:
+            if data["datapoints"][0]["timestamp"] < self.query["start"]:
+                retrieved_inside_range -= 1
+                if self.retrieved_data:  # second page, ignore point before
+                    data["datapoints"] = data["datapoints"][1:]
+            if data["datapoints"] and data["datapoints"][-1]["timestamp"] >= self.query["end"]:
+                retrieved_inside_range -= 1
+                # we still need to paginate, so point after is duplicate here (and will mess up start)
+                if retrieved_inside_range == self.limit:
+                    data["datapoints"] = data["datapoints"][:-1]
         self.retrieved_data._extend(Datapoints._load(data, expected_fields=self.query.get("aggregates", ["value"])))
-        if len(datapoints) == self.limit:
-            self.query["start"] = datapoints[-1]["timestamp"] + self.granularity
+        if retrieved_inside_range == self.limit:
+            self.query["start"] = data["datapoints"][-1]["timestamp"] + self.granularity
             return self  # continue job
         else:
             return self.retrieved_data  # done
