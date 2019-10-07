@@ -100,9 +100,14 @@ class Job:
         self.children = None
         self.priority = self.PRIORITY_COUNTER
         Job.PRIORITY_COUNTER += 1
+        self.callback = None
 
     def __lt__(self, other):
         return self.priority < other.priority
+
+    def set_callback(self,callback):
+        """add a callback to be called with the result when the job is done. Note that in the case of an exception in the job, the exception object will be passed instead of a result."""
+        self.callback = callback
 
     @property
     def result(self):
@@ -154,6 +159,8 @@ class Job:
             self.parent._merge_child(result, self.child_index)
         else:
             self._result.set_result(result)
+            if self.callback:
+                self.callback(result)
 
     def _merge_child(self, result, child_index):
         with self.merge_lock:
