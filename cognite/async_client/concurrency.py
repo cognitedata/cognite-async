@@ -100,19 +100,36 @@ class Job:
         self.children = None
         self.priority = self.PRIORITY_COUNTER
         Job.PRIORITY_COUNTER += 1
-        self.callback = None
+        self.callbacks = []
         self.callback_lock = threading.Lock()
 
     def __lt__(self, other):
         return self.priority < other.priority
 
-    def set_callback(self,callback):
-        """Add a callback to be called with the result when the job is done. When setting on a job that is done already, will callback immediately (and synchronously).
-        Note that in the case of an exception in the job, the exception object will be passed instead of a result."""
+    def process_callbacks(self,result):
+        for cb in self.callbacks:
+            if isinstance(result, list) and result and isinstance(result[0], Exception):
+                ex_list = result
+            else:
+                ex_list = []
+            try:
+                cb_ret = cb(result)
+            except Exception as e:
+                ex_list.append(e)
+                cb_ret = ex_list
+            result = cb_ret if cb_ret is not None else result
+        self.callbacks = []
+        return result
+
+    def add_callback(self,callback):
+        """Add a callback to be called with the result when the job is done.
+        Callbacks will be called in order, and can modify the result if returning a value other than None.
+        When setting on a job that is done already, will callback immediately (and synchronously).
+        Note that in the case of exception(s) in the job or previous callbacks, a list of exception objects will be passed instead of a result."""
         with self.callback_lock:
-            self.callback = callback
-            if self._result.done(): # trying to set a callback on a job
-                self.callback(self.result)
+            self.callbacks.append(callback)
+            if self._result.done(): # trying to set a callback on a job that's done
+                self._result.set_result(self.process_callbacks(self._result.result()))
 
     @property
     def result(self):
@@ -121,6 +138,15 @@ class Job:
         if isinstance(res, list) and res and isinstance(res[0], Exception):
             collect_exc_info_and_raise(res)
         return res
+
+    def _set_result(self, result):
+        if self.parent:
+            self._result.set_result("child_job_finished")  # should not duplicate data here, all goes to parent
+            self.parent._merge_child(result, self.child_index)
+        else:
+            with self.callback_lock:
+                result = self.process_callbacks(result)
+                self._result.set_result(result)
 
     def splittable(self):
         return False
@@ -157,16 +183,6 @@ class Job:
 
     def _initial_split(self):
         return self._handle_split(self.initial_split())
-
-    def _set_result(self, result):
-        if self.parent:
-            self._result.set_result("child_job_finished")  # should not duplicate data here, all goes to parent
-            self.parent._merge_child(result, self.child_index)
-        else:
-            with self.callback_lock:
-                self._result.set_result(result)
-                if self.callback:
-                    self.callback(result)
 
     def _merge_child(self, result, child_index):
         with self.merge_lock:
