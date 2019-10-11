@@ -21,10 +21,8 @@ class DataPointsAPIExtensions:
         self,
         start: Union[int, str, datetime] = 0,
         end: Union[int, str, datetime] = "now",
-        id: Union[int, List[int], Dict[str, Union[int, List[str]]], List[Dict[str, Union[int, List[str]]]]] = None,
-        external_id: Union[
-            str, List[str], Dict[str, Union[int, List[str]]], List[Dict[str, Union[int, List[str]]]]
-        ] = None,
+        id: Union[int, List[int], Dict[int, Any]] = None,
+        external_id: Union[str, List[str], Dict[str, Any]] = None,
         aggregates: Union[str, List[str]] = None,
         granularity: str = None,
         include_outside_points: bool = None,
@@ -48,12 +46,10 @@ class DataPointsAPIExtensions:
         self,
         start: Union[int, str, datetime],
         end: Union[int, str, datetime],
-        aggregates: List[str],
+        aggregates: Union[str, List[str]],
         granularity: str,
-        id: Union[int, List[int], Dict[str, Union[int, List[str]]], List[Dict[str, Union[int, List[str]]]]] = None,
-        external_id: Union[
-            str, List[str], Dict[str, Union[int, List[str]]], List[Dict[str, Union[int, List[str]]]]
-        ] = None,
+        id: Union[int, List[int], Dict[int, Any]] = None,
+        external_id: Union[str, List[str], Dict[str, Any]] = None,
     ) -> "pandas.DataFrame":
         """Asynchronous dataframe retrieval.
 
