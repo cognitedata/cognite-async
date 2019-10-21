@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+requests = "*"
+matplotlib = "*"
+pytest = "<5"
+
+[dev-packages]
+sphinx = "*"
+sphinx-rtd-theme = "*"
+pytest-cov = "*"
+twine = "*"
+pytest = "*"
+black = "==19.3b0"
+pre-commit = "*"
+isort = "*"
+tox = "*"
+tox-pyenv = "*"
+responses = "*"
+pytest-rerunfailures = "*"
+
+[pipenv]
+allow_prereleases = true
