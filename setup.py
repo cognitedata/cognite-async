@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="cognite-async",
-    version="0.1",
+    version="0.2",
     url="",
     license="",
     author="Sander Land",
