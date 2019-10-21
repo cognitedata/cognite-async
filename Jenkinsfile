@@ -45,8 +45,8 @@ podTemplate(
             }
         }
         container('python') {
-            stage('Install pipenv') {
-                sh("pip3 install pipenv")
+            stage('Install pipenv and black') {
+                sh("pip3 install pipenv black")
             }
             stage('Install core dependencies') {
                 sh("pipenv run pip install -r requirements.txt")
