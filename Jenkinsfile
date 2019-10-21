@@ -29,10 +29,9 @@ podTemplate(
     volumes: [
         secretVolume(secretName: 'jenkins-docker-builder', mountPath: '/jenkins-docker-builder', readOnly: true),
         secretVolume(secretName: 'pypi-credentials', mountPath: '/pypi', readOnly: true),
-        configMapVolume(configMapName: 'codecov-script-configmap', mountPath: '/codecov-script'),
     ],
     envVars: [
-        secretEnvVar(key: 'COGNITE_API_KEY', secretName: 'cognite-async', secretKey: 'test-api-key'),
+        secretEnvVar(key: 'COGNITE_API_KEY', secretName: 'cognite-async', secretKey: 'integration-test-api-key'),
         envVar(key: 'COGNITE_BASE_URL', value: "https://greenfield.cognitedata.com"),
         envVar(key: 'COGNITE_CLIENT_NAME', value: "cognite-async-integration-tests"),
         envVar(key: 'COGNITE_PROJECT', value: "sander"),
