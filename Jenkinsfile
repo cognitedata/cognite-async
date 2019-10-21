@@ -45,8 +45,9 @@ podTemplate(
             }
         }
         container('python') {
-            stage('Install pipenv and black') {
-                sh("pip3 install pipenv black")
+            stage('Install pipenv and dependencies') {
+                sh("pip3 install pipenv")
+                sh("pipenv sync --dev")
             }
             stage('Check code') {
                 sh("pipenv run black -l 120 --check .")
@@ -56,12 +57,6 @@ podTemplate(
                 dir('./docs'){
                     sh("pipenv run sphinx-build -W -b html ./source ./build")
                 }
-            }
-            stage('Install dependencies') {
-                sh("pipenv sync --dev")
-            }
-            stage('Test OpenAPI Generator'){
-                sh('pipenv run pytest openapi/tests')
             }
             stage('Test Client') {
                 sh("pyenv local 3.5.0 3.6.6 3.7.2")
