@@ -106,7 +106,7 @@ class Job:
     def __lt__(self, other):
         return self.priority < other.priority
 
-    def process_callbacks(self,result):
+    def process_callbacks(self, result):
         for cb in self.callbacks:
             if isinstance(result, list) and result and isinstance(result[0], Exception):
                 ex_list = result
@@ -121,14 +121,14 @@ class Job:
         self.callbacks = []
         return result
 
-    def add_callback(self,callback):
+    def add_callback(self, callback):
         """Add a callback to be called with the result when the job is done.
         Callbacks will be called in order, and can modify the result if returning a value other than None.
         When setting on a job that is done already, will callback immediately (and synchronously).
         Note that in the case of exception(s) in the job or previous callbacks, a list of exception objects will be passed instead of a result."""
         with self.callback_lock:
             self.callbacks.append(callback)
-            if self._result.done(): # trying to set a callback on a job that's done
+            if self._result.done():  # trying to set a callback on a job that's done
                 self._result.set_result(self.process_callbacks(self._result.result()))
 
     @property

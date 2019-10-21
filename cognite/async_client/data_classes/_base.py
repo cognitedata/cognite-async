@@ -1,6 +1,8 @@
 import copy
-from cognite.async_client.utils import to_list, extends_class
+
+from cognite.async_client.utils import extends_class, to_list
 from cognite.client.data_classes._base import *
+
 
 @extends_class(extends=CogniteResource)
 class CogniteResourceExtensions:

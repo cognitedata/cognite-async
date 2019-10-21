@@ -5,4 +5,5 @@ from cognite.client._api.assets import AssetsAPI
 @extends_class(extends=AssetsAPI)
 class AssetsAPIExtensions:
     """Extensions to AssetsAPI"""
+
     pass

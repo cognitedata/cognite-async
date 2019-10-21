@@ -11,6 +11,7 @@ from cognite.client.data_classes import Asset
 
 client = CogniteClient(server="greenfield", project="sander")
 
+
 @pytest.fixture
 def post_spy():
     with mock.patch.object(client.assets, "_post", wraps=client.assets._post) as _:
@@ -18,7 +19,7 @@ def post_spy():
 
 
 class TestCreateJobs:
-    def test_multi_create(self,post_spy):
+    def test_multi_create(self, post_spy):
         client.assets._CREATE_LIMIT = 2
         r = client.assets.create_async([Asset(description="delete me", name=str(i)) for i in range(5)])
         al = r.result

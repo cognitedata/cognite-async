@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
-sys.path.append('../')
+
+sys.path.append("../")
 
 # -- General configuration ------------------------------------------------
 
@@ -36,7 +37,7 @@ author = "Sander Land"
 # built documents.
 #
 # The short X.Y version.
-version = '0.1'
+version = "0.1"
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -92,7 +93,7 @@ html_logo = "img/cognite_logo_white.png"
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = project+"-pythondoc"
+htmlhelp_basename = project + "-pythondoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -115,9 +116,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (master_doc, project + ".tex", project + " Documentation", author, "manual")
-]
+latex_documents = [(master_doc, project + ".tex", project + " Documentation", author, "manual")]
 
 
 # -- Options for manual page output ---------------------------------------
