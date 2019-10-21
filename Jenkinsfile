@@ -48,9 +48,6 @@ podTemplate(
             stage('Install pipenv and black') {
                 sh("pip3 install pipenv black")
             }
-            stage('Install core dependencies') {
-                sh("pipenv run pip install -r requirements.txt")
-            }
             stage('Check code') {
                 sh("pipenv run black -l 120 --check .")
             }
@@ -59,6 +56,9 @@ podTemplate(
                 dir('./docs'){
                     sh("pipenv run sphinx-build -W -b html ./source ./build")
                 }
+            }
+            stage('Install core dependencies') {
+                sh("pipenv run pip install -r requirements.txt")
             }
             stage('Test OpenAPI Generator'){
                 sh('pipenv run pytest openapi/tests')
