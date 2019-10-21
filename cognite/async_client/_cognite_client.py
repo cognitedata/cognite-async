@@ -8,13 +8,13 @@ from cognite.client.experimental import CogniteClient as Client
 
 
 class CogniteClient(Client):
-    """Initializes cognite client, with experimental and data science extensions.
+    """Initializes cognite client, with experimental and async extensions.
 
     Args:
         * api_key (str): Your api key. If not given, looks for it in environment variables COGNITE_API_KEY and [PROJECT]_API_KEY
         * server (str): Sets base_url to https://[server].cognitedata.com, e.g. server=greenfield.
         * max_workers_async (int): Maximum number of worker threads for the asynchronous job queue. Defaults to max_workers (10).
-        * **kwargs: other arguments are passed to the SDK.
+        * `**kwargs`: other arguments are passed to the SDK.
     """
 
     def __init__(self, server=None, max_workers_async=None, **kwargs):

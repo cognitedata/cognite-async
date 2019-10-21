@@ -11,7 +11,7 @@ Logging in
 
 Extensions to all Data Classes (Asset, TimeSeries, etc)
 -------------------------------------------------------
-.. autoclass:: cognite.async_client._api.data_classes._base.CogniteResourceExtensions
+.. autoclass:: cognite.async_client.data_classes._base.CogniteResourceExtensions
     :members:
 
 Extensions to all API classes (client.assets, etc)

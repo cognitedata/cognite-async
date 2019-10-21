@@ -25,5 +25,5 @@ See examples/publicdata.ipynb
 Contents
 ^^^^^^^^
 .. toctree::
-   cogniteds
+   cogniteasync
 
