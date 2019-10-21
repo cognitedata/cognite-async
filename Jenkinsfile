@@ -1,4 +1,4 @@
-@Library('jenkins-helpers@v0.1.12') _
+@Library('jenkins-helpers@v0.1.36') _
 
 def label = "cognite-async-${UUID.randomUUID().toString()}"
 
@@ -72,11 +72,6 @@ podTemplate(
             stage('Build') {
                 sh("python3 setup.py sdist")
                 sh("python3 setup.py bdist_wheel")
-            }
-            if (env.BRANCH_NAME == 'master') {
-                stage('Release') {
-                    sh("pipenv run twine upload --config-file /pypi/.pypirc dist/*")
-                }
             }
         }
     }
