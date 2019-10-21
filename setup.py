@@ -11,7 +11,7 @@ setup(
     author_email="sander.land@cognite.com",
     description="Extensions for asynchronous calls for the Cognite Data Fusion (CDF) Python SDK",
     install_requires=["pandas", "numpy", "cognite-sdk>=1.3.0"],
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     packages=["cognite." + p for p in find_packages(where="cognite")],
     include_package_data=True,
 )
