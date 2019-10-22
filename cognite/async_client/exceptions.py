@@ -1,7 +1,7 @@
 from collections import UserList
 
 
-class CogniteJobError(Exception,UserList):
+class CogniteJobError(Exception, UserList):
     def __init__(self, ex_list=[]):
         UserList.__init__(self, ex_list)
         Exception.__init__(self)

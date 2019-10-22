@@ -13,7 +13,7 @@ client = CogniteClient(server="greenfield", project="sander")
 
 @pytest.fixture
 def example_assets():
-    assets = [Asset(description="delete me", name=str(i), external_id=str(i)) for i in range(5)] # TODO: random string
+    assets = [Asset(description="delete me", name=str(i), external_id=str(i)) for i in range(5)]  # TODO: random string
     for a in assets:
         try:
             client.assets.delete(external_id=a.external_id, recursive=True)
