@@ -4,10 +4,12 @@ import math
 import queue
 import sys
 import threading
+import traceback
 from concurrent.futures import Future
 
 import pandas as pd
 
+from cognite.async_client.exceptions import CogniteJobError
 from cognite.async_client.utils import to_list
 from cognite.client.data_classes import Datapoints, DatapointsList
 from cognite.client.exceptions import CogniteAPIError
@@ -23,7 +25,6 @@ class JobQueue:
         self.num_workers = num_workers
         self._idle = [True] * num_workers
         self.any_idle = True
-        self._failed_jobs = []
         self._threadpool = [
             threading.Thread(target=self._run_jobs, args=[tid], daemon=True) for tid in range(self.num_workers)
         ]
@@ -68,10 +69,13 @@ class JobQueue:
                 if continued_job:
                     self.submit(continued_job)
         except Exception as e:
-            print("Exception in Job Queue. Please report this on slack or github. Exception: ", e, "\nTraceback:")
-            import traceback
-
-            traceback.print_tb(sys.exc_info()[2])
+            print(
+                "Exception in Job Queue. Please report this on slack or github. Exception: ",
+                e,
+                "\nTraceback:",
+                file=sys.stderr,
+            )
+            traceback.print_tb(sys.exc_info()[2], file=sys.stderr)
             self._threadpool[tid] = e.with_traceback(sys.exc_info()[2])
 
     def __str__(self):
@@ -85,9 +89,6 @@ class JobQueue:
                 sum(self._idle),
             )
         return s
-
-    def failed_jobs(self):
-        return self._failed_jobs
 
 
 class Job:
@@ -108,13 +109,13 @@ class Job:
 
     def process_callbacks(self, result):
         for cb in self.callbacks:
-            if isinstance(result, list) and result and isinstance(result[0], Exception):
+            if isinstance(result, CogniteJobError):
                 ex_list = result
             else:
-                ex_list = []
+                ex_list = CogniteJobError()
             try:
                 cb_ret = cb(result)
-            except Exception as e:
+            except Exception as e:  # not expecting a JobError / multiexception here since it's user code
                 ex_list.append(e)
                 cb_ret = ex_list
             result = cb_ret if cb_ret is not None else result
@@ -135,8 +136,8 @@ class Job:
     def result(self):
         """waits for job to finish and return the result, or raise any exceptions that occurred"""
         res = self._result.result()
-        if isinstance(res, list) and res and isinstance(res[0], Exception):
-            collect_exc_info_and_raise(res)
+        if isinstance(res, CogniteJobError):
+            raise res  # collect_exc_info_and_raise(res)
         return res
 
     def _set_result(self, result):
@@ -156,7 +157,7 @@ class Job:
         raise Exception("Job is not splittable")
 
     def run(self):
-        raise NotImplementedError("Abstract base class method called")
+        raise NotImplementedError("The `run` method of a Job needs to be implemented.")
 
     def initial_split(self):
         """splits job into initial batches."""
@@ -187,9 +188,9 @@ class Job:
     def _merge_child(self, result, child_index):
         with self.merge_lock:
             self.children[child_index] = result
-            if all([not isinstance(j, Job) for j in self.children]):
-                exc = [e for e in self.children if isinstance(e, list) and e and isinstance(e[0], Exception)]
-                self._set_result(sum(exc, []) if exc else self.merge())
+            if all([not isinstance(j, Job) for j in self.children]):  # done with all sub-jobs
+                exc = [e for e in self.children if isinstance(e, CogniteJobError)]
+                self._set_result(sum(exc, CogniteJobError()) if exc else self.merge())
 
     def _run_and_store(self):
         try:
@@ -197,7 +198,7 @@ class Job:
             if isinstance(result, Job):
                 return result  # continue Job instead of storing
         except Exception as e:
-            result = [e]
+            result = CogniteJobError([e])
         self._set_result(result)
 
 
