@@ -1,8 +1,8 @@
 import os
 
 import cognite.async_client._api  # run extensions
-import cognite.async_client.data_classes._base  # run extensions
 import cognite.async_client._api_client  # run extensions
+import cognite.async_client.data_classes._base  # run extensions
 from cognite.async_client.concurrency import JobQueue
 from cognite.client.experimental import CogniteClient as Client
 
