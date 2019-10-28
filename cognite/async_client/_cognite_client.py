@@ -21,7 +21,7 @@ class CogniteClient(Client):
         if "base_url" not in kwargs and server is not None:
             kwargs["base_url"] = "https://" + server + ".cognitedata.com"
 
-        if "client_name" not in kwargs:
+        if "client_name" not in kwargs and not os.environ.get("COGNITE_CLIENT_NAME"):
             kwargs["client_name"] = "cognite async sdk"
 
         if "api_key" not in kwargs and not os.environ.get("COGNITE_API_KEY") and "project" in kwargs:
