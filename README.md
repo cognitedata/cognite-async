@@ -3,9 +3,7 @@
 </a>
 
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/cognite-async/master)](https://jenkins.cognite.ai/job/github-builds/job/cognite-async/job/master/)
-[![Documentation Status](https://readthedocs.com/projects/cognite-async/badge/?version=latest)](https://cognite-docs.readthedocs-hosted.com/en/latest/)
-[![PyPI version](https://badge.fury.io/py/cognite-async.svg)](https://pypi.org/project/cognite-async/)
-[![tox](https://img.shields.io/badge/tox-3.5%2B-blue.svg)](https://www.python.org/downloads/release/python-350/)
+[![tox](https://img.shields.io/badge/tox-3.6%2B-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 cognite-async
@@ -18,8 +16,7 @@ Import the cognite client from this package using `from cognite.async_client imp
 
 ## Installation
 
-* git clone git@github.com:cognitedata/cognite-async
-* pip install .
+The package is available from our private artifactory.
 
 ## Requirements
 
@@ -33,6 +30,7 @@ Build documentation using:
 
 * cd docs
 * sphinx-build -W -b html ./source ./build
+
 
 
 
