@@ -3,7 +3,6 @@
 
 testBuildReleasePoetryPackage {
     releaseToArtifactory = true
-    uploadCoverageReport = true
     testWithTox = true
     toxEnvList = ['py36', 'py37', 'py38']
     extraEnvVars = [
