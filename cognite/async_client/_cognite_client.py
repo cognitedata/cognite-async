@@ -29,6 +29,7 @@ class CogniteClient(Client):
             if os.environ.get(key):
                 kwargs["api_key"] = os.environ[key]
             else:
+                print(os.environ)
                 raise ValueError("Did not find api key variable", key)
         if "max_workers" not in kwargs:
             kwargs["max_workers"] = 25
