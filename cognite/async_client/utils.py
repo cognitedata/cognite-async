@@ -13,7 +13,6 @@ def extends_class(cls=None, extends=None):
     if cls is None:
         return functools.partial(extends_class, extends=extends)
     for name, fn in inspect.getmembers(cls, predicate=inspect.isfunction):
-        # print("Extending", extends, "with", name)
         setattr(extends, name, fn)
     return cls
 

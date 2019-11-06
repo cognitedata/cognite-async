@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cognite-async"
-version = "0.3.0"
+version = "0.3.1"
 description = "Extensions for asynchronous calls for the Cognite Data Fusion (CDF) Python SDK"
 authors = ["Sander Land <sander.land@cognite.com>"]
 

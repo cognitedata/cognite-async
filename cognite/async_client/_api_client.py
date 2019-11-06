@@ -1,5 +1,5 @@
 from cognite.async_client.concurrency import CreateJob
-from cognite.async_client.utils import extends_class
+from cognite.async_client.utils import extends_class, to_list
 from cognite.client._api_client import APIClient
 from cognite.client.exceptions import *
 
@@ -41,4 +41,5 @@ class ApiClientExtensions:
             Dict[str,CogniteResourceList]: dictionary of {"created": list of created resources, "updated": list of updated resources}
 
         """
-        return self._cognite_client.submit_job(CreateJob(resources, api_client=self, upsert=True))
+        insertable_resources = [r.insertable_copy() for r in to_list(resources)]
+        return self._cognite_client.submit_job(CreateJob(insertable_resources, api_client=self, upsert=True))
