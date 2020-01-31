@@ -46,3 +46,6 @@ class TestDatapointsJob:
             external_id="ts_1min", start=0, end=datetime(2018, 3, 1), aggregates="interpolation", granularity="5m"
         )
         pd.testing.assert_frame_equal(dpl_old, j.result)
+
+    def count(self):
+        assert isinstance(client.datapoints.count(client.time_series.list()[0]).result, int)

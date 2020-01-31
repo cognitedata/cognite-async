@@ -8,7 +8,7 @@ import pytest
 from cognite.async_client import CogniteClient
 from cognite.client.data_classes import Asset
 
-client = CogniteClient(server="greenfield", project="sander", debug=True)
+client = CogniteClient(server="greenfield", project="sander")
 
 
 @pytest.fixture

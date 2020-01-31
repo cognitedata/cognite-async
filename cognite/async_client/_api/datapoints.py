@@ -8,9 +8,10 @@ from typing import *
 import numpy as np
 import pandas as pd
 
-from cognite.async_client.concurrency import DatapointsListJob
+from cognite.async_client.concurrency import CountDatapointsJob, DatapointsListJob
 from cognite.async_client.utils import extends_class, to_list
 from cognite.client._api.datapoints import DatapointsAPI, DatapointsFetcher
+from cognite.client.data_classes import TimeSeries
 
 
 @extends_class(extends=DatapointsAPI)
@@ -26,7 +27,7 @@ class DataPointsAPIExtensions:
         aggregates: Union[str, List[str]] = None,
         granularity: str = None,
         include_outside_points: bool = None,
-    ):
+    ) -> "Future":
         """Asynchronous datapoints retrieval.
 
         Returns:
@@ -50,7 +51,7 @@ class DataPointsAPIExtensions:
         granularity: str,
         id: Union[int, List[int], Dict[int, Any]] = None,
         external_id: Union[str, List[str], Dict[str, Any]] = None,
-    ) -> "pandas.DataFrame":
+    ) -> "Future":
         """Asynchronous dataframe retrieval.
 
         Returns:
@@ -59,3 +60,15 @@ class DataPointsAPIExtensions:
         job = self.retrieve_async(start, end, id, external_id, aggregates, granularity)
         job.add_callback(lambda dpl: dpl.to_pandas())
         return job
+
+    def count(
+        self, time_series: TimeSeries, start: Union[int, str, datetime] = 0, end: Union[int, str, datetime] = "now"
+    ) -> "Future":
+        """Asynchronous data points counting.
+
+        Returns:
+            A Job object whose `result` property waits for and returns an integer with the number of data points in the time series.
+        """
+        return self._cognite_client.submit_job(
+            CountDatapointsJob(time_series=time_series, start=start, end=end, api_client=self)
+        )
